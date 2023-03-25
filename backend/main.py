@@ -3,6 +3,7 @@ import numpy as np
 import io
 import pickle
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import StreamingResponse
 
 # Load the pickled model from a file
@@ -10,6 +11,19 @@ with open("realesrgan_x4plus_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/enhance_image")
@@ -31,6 +45,7 @@ async def enhance_image(image: UploadFile = File(...)):
 
     # Return the enhanced image as a file download
     print("Output sent")
-    return StreamingResponse(
+    response = StreamingResponse(
         io.BytesIO(encoded_image.tobytes()), media_type="image/png"
     )
+    return response

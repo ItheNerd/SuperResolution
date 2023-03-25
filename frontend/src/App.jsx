@@ -1,4 +1,4 @@
-import DropZone from "./components/dropZone3.jsx";
+import DropZone from "./components/dropZone.jsx";
 
 function App() {
   return (
